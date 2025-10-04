@@ -1,6 +1,6 @@
 const CACHE_NAME = 'my-app-cache-v1';
 const urlsToCache = [
-  './app.html',
+  './index.html',
   './manifest.json',
   './kyattorabinngu.png'
 ];
