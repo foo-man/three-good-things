@@ -1,8 +1,8 @@
 const CACHE_NAME = 'my-app-cache-v1';
 const urlsToCache = [
-  './アプリ.html',
+  './app.html',
   './manifest.json',
-  './キャットラビング風.png'
+  './kyattorabinngu.png'
 ];
 
 self.addEventListener('install', event => {
