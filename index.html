@@ -77,10 +77,12 @@ table {
   overflow:hidden;
   box-shadow:0 2px 6px rgba(0,0,0,0.1);
 }
-th,td {border-bottom:1px solid #d8e8da;padding:0.8rem;}
+th,td {border-bottom:1px solid #d8e8da;padding:0.8rem;vertical-align:top;}
 th {background-color:#e8f5ec;color:#2f5d50;font-weight:bold;}
 td:last-child button {background-color:#ff9d9d;padding:0.3rem 0.8rem;border-radius:10px;font-size:0.8rem;}
 td:last-child button:hover {background-color:#f77373;}
+/* セル内改行対応 */
+td.history-cell {white-space: pre-line; text-align:left;}
 
 /* 🌸ふわっと浮く花 */
 @keyframes floatFlower {
@@ -135,7 +137,7 @@ td:last-child button:hover {background-color:#f77373;}
 }
 .calendar-cell.today {background-color:#e8f5ec;font-weight:bold;}
 
-/* 日付選択履歴 */
+/* 選択日履歴表示 */
 #selectedDayHistory {
   display:block;
   margin:2rem auto;
@@ -144,6 +146,7 @@ td:last-child button:hover {background-color:#f77373;}
   border-radius:12px;
   box-shadow:0 2px 6px rgba(0,0,0,0.1);
   max-width:600px;
+  text-align:left;
 }
 </style>
 </head>
@@ -157,7 +160,7 @@ td:last-child button:hover {background-color:#f77373;}
 <h2>🌸 履歴</h2>
 <table>
   <thead>
-    <tr><th>日付</th><th>いいこと１</th><th>いいこと２</th><th>いいこと３</th></tr>
+    <tr><th>日付</th><th>内容</th><th></th></tr>
   </thead>
   <tbody id="history"></tbody>
 </table>
@@ -168,7 +171,7 @@ td:last-child button:hover {background-color:#f77373;}
   <h2>🗑️ 削除した履歴（ゴミ箱）</h2>
   <table>
     <thead>
-      <tr><th>日付</th><th>いいこと１</th><th>いいこと２</th><th>いいこと３</th></tr>
+      <tr><th>日付</th><th>内容</th></tr>
     </thead>
     <tbody id="deletedHistory"></tbody>
   </table>
@@ -184,14 +187,13 @@ td:last-child button:hover {background-color:#f77373;}
   <div class="calendar-grid" id="calendarGrid"></div>
 </div>
 
-<!-- 選択日表示 -->
+<!-- 選択日履歴表示 -->
 <div id="selectedDayHistory"></div>
 
 <script>
-// 🌸保存処理＋花アニメ＋カレンダー更新
 function saveGoodThings(){
-  const timestamp = Date.now();
-  const goodThings = [
+  const timestamp=Date.now();
+  const goodThings=[
     document.getElementById('good1').value,
     document.getElementById('good2').value,
     document.getElementById('good3').value
@@ -200,15 +202,20 @@ function saveGoodThings(){
   showHistory();
   renderCalendar();
 
-  // 🌸花アニメ
-  const flower = document.createElement('div');
+  // 入力欄クリア
+  document.getElementById('good1').value='';
+  document.getElementById('good2').value='';
+  document.getElementById('good3').value='';
+
+  // 花アニメ
+  const flower=document.createElement('div');
   flower.className='floating-flower';
   flower.textContent='🌸';
   document.body.appendChild(flower);
-  const btn = document.querySelector('button[onclick="saveGoodThings()"]');
-  const rect = btn.getBoundingClientRect();
-  flower.style.left = rect.left+rect.width/2+'px';
-  flower.style.top = rect.top+'px';
+  const btn=document.querySelector('button[onclick="saveGoodThings()"]');
+  const rect=btn.getBoundingClientRect();
+  flower.style.left=rect.left+rect.width/2+'px';
+  flower.style.top=rect.top+'px';
   flower.addEventListener('animationend',()=>flower.remove());
 }
 
@@ -225,11 +232,10 @@ function showHistory(){
   keys.forEach(keyNum=>{
     const value=JSON.parse(localStorage.getItem(String(keyNum)));
     const tr=document.createElement('tr');
+    const content=`1: ${value[0]||''}\n2: ${value[1]||''}\n3: ${value[2]||''}`;
     tr.innerHTML=`
       <td>${new Date(keyNum).toLocaleString()}</td>
-      <td>${value[0]||''}</td>
-      <td>${value[1]||''}</td>
-      <td>${value[2]||''}</td>
+      <td class="history-cell">${content}</td>
       <td><button class="delete-btn" data-key="${keyNum}">削除</button></td>
     `;
     history.appendChild(tr);
@@ -244,12 +250,12 @@ function showHistory(){
       showHistory();
       showDeletedHistory();
       renderCalendar();
-      showSelectedDayHistory(); // 日付選択表示更新
+      showSelectedDayHistory();
     };
   });
 }
 
-// 削除履歴表示
+// 削除履歴
 function showDeletedHistory(){
   const deletedTable=document.getElementById('deletedHistory');
   deletedTable.innerHTML='';
@@ -262,12 +268,11 @@ function showDeletedHistory(){
   keys.forEach(key=>{
     const value=JSON.parse(localStorage.getItem(key));
     const dateStr=new Date(Number(key.replace('deleted_',''))).toLocaleString();
+    const content=`1: ${value[0]||''}\n2: ${value[1]||''}\n3: ${value[2]||''}`;
     const tr=document.createElement('tr');
     tr.innerHTML=`
       <td>${dateStr}</td>
-      <td>${value[0]||''}</td>
-      <td>${value[1]||''}</td>
-      <td>${value[2]||''}</td>
+      <td class="history-cell">${content}</td>
     `;
     deletedTable.appendChild(tr);
   });
@@ -279,7 +284,7 @@ function toggleDeleted(){
   showDeletedHistory();
 }
 
-// 🌿カレンダー
+// カレンダー
 let currentMonth=new Date();
 function renderCalendar(){
   const year=currentMonth.getFullYear();
@@ -309,7 +314,6 @@ function renderCalendar(){
     const dateStr=date.toLocaleDateString();
     if(entries.includes(dateStr)) cell.classList.add('has-entry');
 
-    // クリックで選択日表示
     cell.onclick=()=>{ showSelectedDayHistory(dateStr); }
 
     grid.appendChild(cell);
@@ -350,17 +354,11 @@ function showSelectedDayHistory(dateStr){
   }
   keys.forEach(k=>{
     const value=JSON.parse(localStorage.getItem(String(k)));
-    container.innerHTML+=`
-      <ul>
-        <li>${value[0]||''}</li>
-        <li>${value[1]||''}</li>
-        <li>${value[2]||''}</li>
-      </ul>
-    `;
+    container.innerHTML+=`<pre>1: ${value[0]||''}\n2: ${value[1]||''}\n3: ${value[2]||''}</pre>`;
   });
 }
 
-// 🔔 21:00通知（ブラウザが開いている間のみ）
+// 通知
 function requestNotificationPermission(){
   if("Notification" in window){
     Notification.requestPermission().then(permission=>{
