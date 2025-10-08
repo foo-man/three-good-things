@@ -8,15 +8,15 @@
 <style>
 body {
   font-family: "Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;
-  background: linear-gradient(180deg,#f0f8f4 0%,#ffffff 100%);
-  color:#333;
+  background: linear-gradient(180deg,#eef8f3 0%,#ffffff 100%);
+  color:#2f3e34;
   text-align:center;
-  padding:2rem;
-  position:relative;
+  padding:1rem;
+  margin:0;
   overflow-y:auto;
+  position:relative;
 }
 
-/* 葉っぱっぽいモチーフ */
 body::before {
   content:"";
   position:fixed;
@@ -25,16 +25,32 @@ body::before {
   width:120%;
   height:120%;
   background-image:
-    radial-gradient(rgba(150,200,150,0.1) 20%,transparent 20%),
-    radial-gradient(rgba(130,180,130,0.05) 20%,transparent 20%);
+    radial-gradient(rgba(150,200,150,0.08) 20%,transparent 20%),
+    radial-gradient(rgba(130,180,130,0.04) 20%,transparent 20%);
   background-position:0 0,25px 25px;
   background-size:50px 50px;
   z-index:-1;
 }
 
-h1 {color:#2f5d50;font-size:1.8rem;margin-bottom:1rem;}
-input {
-  width:80%;
+
+/* 柔らかいタイトル */
+h1 {
+  color:#356d58;
+  font-size:1.8rem;
+  margin:1rem 0;
+}
+
+/* 入力カード */
+.input-card {
+  background:#ffffff;
+  border-radius:16px;
+  padding:1rem;
+  box-shadow:0 2px 8px rgba(0,0,0,0.05);
+  margin:1rem auto 2rem;
+  max-width:400px;
+}
+.input-card input {
+  width:90%;
   max-width:300px;
   padding:0.6rem;
   margin:0.3rem 0;
@@ -42,8 +58,7 @@ input {
   border-radius:10px;
   background-color:#f9fff9;
 }
-
-button {
+.input-card button {
   background-color:#86cfa3;
   color:white;
   border:none;
@@ -53,58 +68,79 @@ button {
   cursor:pointer;
   margin-top:1rem;
   transition:0.3s;
-  box-shadow:0 2px 5px rgba(0,0,0,0.1);
 }
-
-#toggleDeletedBtn {
-  display:block;
-  margin:1rem auto;
-  background-color:#a1cfa3;
-}
-
-button:hover {
+.input-card button:hover {
   background-color:#6cbf90;
   transform:translateY(-2px);
 }
 
-table {
-  margin:1.5rem auto;
-  border-collapse:collapse;
-  width:90%;
-  max-width:600px;
-  background:#ffffffd8;
+/* 履歴カード */
+.history-card {
+  background:#ffffff;
+  border:1px solid #d8e8da;
   border-radius:12px;
-  overflow:hidden;
-  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+  box-shadow:0 1px 6px rgba(0,0,0,0.08);
+  padding:1rem;
+  margin:1rem auto;
+  max-width:600px;
+  text-align:left;
 }
-th,td {border-bottom:1px solid #d8e8da;padding:0.8rem;vertical-align:top;}
-th {background-color:#e8f5ec;color:#2f5d50;font-weight:bold;}
-td:last-child button {background-color:#ff9d9d;padding:0.3rem 0.8rem;border-radius:10px;font-size:0.8rem;}
-td:last-child button:hover {background-color:#f77373;}
-/* セル内改行対応 */
-td.history-cell {white-space: pre-line; text-align:left;}
+.history-card h3 {
+  margin:0 0 0.4rem;
+  color:#355f4a;
+}
+.history-card ul {
+  list-style:none;
+  margin:0;
+  padding:0;
+}
+.history-card li {
+  background:#f4faf6;
+  margin:0.2rem 0;
+  padding:0.4rem 0.6rem;
+  border-radius:8px;
+  word-break:break-word;
+}
+.history-card button {
+  background-color:#ff9d9d;
+  color:white;
+  border:none;
+  padding:0.4rem 0.8rem;
+  border-radius:10px;
+  font-size:0.9rem;
+  margin-top:0.5rem;
+  cursor:pointer;
+}
+.history-card button:hover { background-color:#f77373; }
 
-/* 🌸ふわっと浮く花 */
-@keyframes floatFlower {
-  0% {transform:translateY(0) scale(1); opacity:1;}
-  50% {transform:translateY(-40px) scale(1.2); opacity:0.8;}
-  100% {transform:translateY(-80px) scale(0.8); opacity:0;}
+/* 削除履歴 */
+#deletedSection {
+  display:none;
+  margin-top:2rem;
 }
-.floating-flower {
-  position:absolute;
-  font-size:1.5rem;
-  pointer-events:none;
-  animation:floatFlower 1.2s ease-out forwards;
-}
-
-/* 🌿カレンダー */
-#calendar {
+#toggleDeletedBtn {
+  background-color:#a3cfa3;
+  color:white;
+  border:none;
+  padding:0.6rem 1.2rem;
+  border-radius:20px;
+  font-size:1rem;
+  cursor:pointer;
+  margin:1rem auto;
   display:block;
+}
+#toggleDeletedBtn:hover {
+  background-color:#8cc790;
+}
+
+/* カレンダー */
+#calendar {
   margin:2rem auto;
   background-color:#f6fbf7;
   border-radius:12px;
   padding:1rem;
   box-shadow:0 2px 6px rgba(0,0,0,0.1);
+  max-width:600px;
 }
 .calendar-header {
   display:flex;
@@ -114,19 +150,28 @@ td.history-cell {white-space: pre-line; text-align:left;}
 }
 .calendar-header button {
   background-color:#a8d5b5;
+  border:none;
   padding:0.3rem 0.8rem;
   border-radius:10px;
+  cursor:pointer;
 }
-.calendar-header h3 {margin:0;color:#2f5d50;}
-.calendar-grid {display:grid; grid-template-columns:repeat(7,1fr); gap:5px;}
+.calendar-header h3 {
+  margin:0;
+  color:#2f5d50;
+}
+.calendar-grid {
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:5px;
+}
 .calendar-cell {
-  padding:0.5rem 0;
+  padding:0.6rem 0;
   border-radius:8px;
   background-color:#ffffff;
   border:1px solid #d8e8da;
   font-size:0.9rem;
-  position:relative;
   cursor:pointer;
+  position:relative;
 }
 .calendar-cell.has-entry::after {
   content:"🌸";
@@ -135,49 +180,57 @@ td.history-cell {white-space: pre-line; text-align:left;}
   right:6px;
   font-size:1rem;
 }
-.calendar-cell.today {background-color:#e8f5ec;font-weight:bold;}
+.calendar-cell.today {
+  background-color:#e8f5ec;
+  font-weight:bold;
+}
 
-/* 選択日履歴表示 */
+/* 選択日履歴 */
 #selectedDayHistory {
-  display:block;
-  margin:2rem auto;
-  padding:1rem;
   background-color:#f6fbf7;
   border-radius:12px;
   box-shadow:0 2px 6px rgba(0,0,0,0.1);
+  padding:1rem;
+  margin:1.5rem auto;
   max-width:600px;
   text-align:left;
+}
+
+/* 花アニメーション */
+@keyframes floatFlower {
+  0% {transform:translateY(0) scale(1);opacity:1;}
+  50% {transform:translateY(-40px) scale(1.2);opacity:0.8;}
+  100% {transform:translateY(-80px) scale(0.8);opacity:0;}
+}
+.floating-flower {
+  position:absolute;
+  font-size:1.5rem;
+  pointer-events:none;
+  animation:floatFlower 1.2s ease-out forwards;
 }
 </style>
 </head>
 <body>
 <h1>🌿 今日の3つのいいこと</h1>
-<input id="good1" placeholder="いいこと1"><br>
-<input id="good2" placeholder="いいこと2"><br>
-<input id="good3" placeholder="いいこと3"><br>
-<button onclick="saveGoodThings()">保存</button>
 
-<h2>🌸 履歴</h2>
-<table>
-  <thead>
-    <tr><th>日付</th><th>内容</th><th></th></tr>
-  </thead>
-  <tbody id="history"></tbody>
-</table>
+<div class="input-card">
+  <input id="good1" placeholder="いいこと1"><br>
+  <input id="good2" placeholder="いいこと2"><br>
+  <input id="good3" placeholder="いいこと3"><br>
+  <button onclick="saveGoodThings()">保存</button>
+</div>
+
+<h2>📖 今日までの記録</h2>
+<div id="history"></div>
 
 <button id="toggleDeletedBtn" onclick="toggleDeleted()">🗂️ 削除した履歴を表示</button>
 
-<div class="deleted-section" id="deletedSection">
+<div id="deletedSection">
   <h2>🗑️ 削除した履歴（ゴミ箱）</h2>
-  <table>
-    <thead>
-      <tr><th>日付</th><th>内容</th></tr>
-    </thead>
-    <tbody id="deletedHistory"></tbody>
-  </table>
+  <div id="deletedHistory"></div>
 </div>
 
-<!-- 🌿カレンダー -->
+<!-- カレンダー -->
 <div id="calendar">
   <div class="calendar-header">
     <button onclick="prevMonth()">←</button>
@@ -187,7 +240,6 @@ td.history-cell {white-space: pre-line; text-align:left;}
   <div class="calendar-grid" id="calendarGrid"></div>
 </div>
 
-<!-- 選択日履歴表示 -->
 <div id="selectedDayHistory"></div>
 
 <script>
@@ -202,24 +254,22 @@ function saveGoodThings(){
   showHistory();
   renderCalendar();
 
-  // 入力欄クリア
   document.getElementById('good1').value='';
   document.getElementById('good2').value='';
   document.getElementById('good3').value='';
 
-  // 花アニメ
   const flower=document.createElement('div');
   flower.className='floating-flower';
   flower.textContent='🌸';
   document.body.appendChild(flower);
-  const btn=document.querySelector('button[onclick="saveGoodThings()"]');
+  const btn=document.querySelector('.input-card button');
   const rect=btn.getBoundingClientRect();
   flower.style.left=rect.left+rect.width/2+'px';
   flower.style.top=rect.top+'px';
   flower.addEventListener('animationend',()=>flower.remove());
 }
 
-// 履歴表示
+// 履歴表示（カード型）
 function showHistory(){
   const history=document.getElementById('history');
   history.innerHTML='';
@@ -231,17 +281,21 @@ function showHistory(){
   keys.sort((a,b)=>b-a);
   keys.forEach(keyNum=>{
     const value=JSON.parse(localStorage.getItem(String(keyNum)));
-    const tr=document.createElement('tr');
-    const content=`1: ${value[0]||''}\n2: ${value[1]||''}\n3: ${value[2]||''}`;
-    tr.innerHTML=`
-      <td>${new Date(keyNum).toLocaleString()}</td>
-      <td class="history-cell">${content}</td>
-      <td><button class="delete-btn" data-key="${keyNum}">削除</button></td>
+    const div=document.createElement('div');
+    div.className='history-card';
+    div.innerHTML=`
+      <h3>${new Date(keyNum).toLocaleString()}</h3>
+      <ul>
+        <li>① ${value[0]||''}</li>
+        <li>② ${value[1]||''}</li>
+        <li>③ ${value[2]||''}</li>
+      </ul>
+      <button data-key="${keyNum}">削除</button>
     `;
-    history.appendChild(tr);
+    history.appendChild(div);
   });
 
-  document.querySelectorAll('.delete-btn').forEach(btn=>{
+  document.querySelectorAll('.history-card button').forEach(btn=>{
     btn.onclick=e=>{
       const key=e.target.getAttribute('data-key');
       const deletedItem=localStorage.getItem(key);
@@ -257,8 +311,8 @@ function showHistory(){
 
 // 削除履歴
 function showDeletedHistory(){
-  const deletedTable=document.getElementById('deletedHistory');
-  deletedTable.innerHTML='';
+  const container=document.getElementById('deletedHistory');
+  container.innerHTML='';
   const keys=[];
   for(let i=0;i<localStorage.length;i++){
     const key=localStorage.key(i);
@@ -267,14 +321,17 @@ function showDeletedHistory(){
   keys.sort((a,b)=>b.localeCompare(a));
   keys.forEach(key=>{
     const value=JSON.parse(localStorage.getItem(key));
-    const dateStr=new Date(Number(key.replace('deleted_',''))).toLocaleString();
-    const content=`1: ${value[0]||''}\n2: ${value[1]||''}\n3: ${value[2]||''}`;
-    const tr=document.createElement('tr');
-    tr.innerHTML=`
-      <td>${dateStr}</td>
-      <td class="history-cell">${content}</td>
+    const div=document.createElement('div');
+    div.className='history-card';
+    div.innerHTML=`
+      <h3>${new Date(Number(key.replace('deleted_',''))).toLocaleString()}</h3>
+      <ul>
+        <li>① ${value[0]||''}</li>
+        <li>② ${value[1]||''}</li>
+        <li>③ ${value[2]||''}</li>
+      </ul>
     `;
-    deletedTable.appendChild(tr);
+    container.appendChild(div);
   });
 }
 
@@ -296,7 +353,7 @@ function renderCalendar(){
   document.getElementById('calendarTitle').textContent=`${year}年 ${month+1}月`;
 
   const startWeek=firstDay.getDay();
-  for(let i=0;i<startWeek;i++){grid.appendChild(document.createElement('div'))}
+  for(let i=0;i<startWeek;i++) grid.appendChild(document.createElement('div'));
 
   const today=new Date();
   const entries=getEntryDates();
@@ -307,19 +364,14 @@ function renderCalendar(){
     const date=new Date(year,month,d);
     cell.textContent=d;
 
-    if(date.getFullYear()===today.getFullYear() &&
-       date.getMonth()===today.getMonth() &&
-       date.getDate()===today.getDate()) cell.classList.add('today');
-
+    if(date.toDateString()===today.toDateString()) cell.classList.add('today');
     const dateStr=date.toLocaleDateString();
     if(entries.includes(dateStr)) cell.classList.add('has-entry');
 
-    cell.onclick=()=>{ showSelectedDayHistory(dateStr); }
-
+    cell.onclick=()=>showSelectedDayHistory(dateStr);
     grid.appendChild(cell);
   }
 }
-
 function getEntryDates(){
   const dates=[];
   for(let i=0;i<localStorage.length;i++){
@@ -331,11 +383,9 @@ function getEntryDates(){
   }
   return dates;
 }
-
 function prevMonth(){ currentMonth.setMonth(currentMonth.getMonth()-1); renderCalendar(); }
 function nextMonth(){ currentMonth.setMonth(currentMonth.getMonth()+1); renderCalendar(); }
 
-// 選択日履歴表示
 function showSelectedDayHistory(dateStr){
   const container=document.getElementById('selectedDayHistory');
   container.innerHTML=`<h3>${dateStr} の記録</h3>`;
@@ -349,12 +399,20 @@ function showSelectedDayHistory(dateStr){
   }
   keys.sort((a,b)=>b-a);
   if(keys.length===0){
-    container.innerHTML+=`<p>記録なし</p>`;
+    container.innerHTML+='<p>記録なし</p>';
     return;
   }
   keys.forEach(k=>{
-    const value=JSON.parse(localStorage.getItem(String(k)));
-    container.innerHTML+=`<pre>1: ${value[0]||''}\n2: ${value[1]||''}\n3: ${value[2]||''}</pre>`;
+    const v=JSON.parse(localStorage.getItem(String(k)));
+    container.innerHTML+=`
+      <div class="history-card">
+        <h3>${new Date(k).toLocaleTimeString()}</h3>
+        <ul>
+          <li>① ${v[0]||''}</li>
+          <li>② ${v[1]||''}</li>
+          <li>③ ${v[2]||''}</li>
+        </ul>
+      </div>`;
   });
 }
 
@@ -366,20 +424,17 @@ function requestNotificationPermission(){
     });
   }
 }
-
 function scheduleDailyNotification(){
   const now=new Date();
   let next21=new Date();
   next21.setHours(21,0,0,0);
   if(now>next21) next21.setDate(next21.getDate()+1);
   const timeout=next21.getTime()-now.getTime();
-
   setTimeout(()=>{
     showNotification();
     setInterval(showNotification,24*60*60*1000);
   },timeout);
 }
-
 function showNotification(){
   if("Notification" in window && Notification.permission==="granted"){
     new Notification("🌸 今日の3つのいいことを記録しよう！",{
