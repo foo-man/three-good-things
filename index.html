@@ -1,71 +1,404 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>今日の3つのいいこと</title>
-  <link rel="manifest" href="manifest.json">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>今日の3つのいいこと 🌿</title>
+<link rel="manifest" href="manifest.json">
+<style>
+body {
+  font-family: "Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;
+  background: linear-gradient(180deg,#f0f8f4 0%,#ffffff 100%);
+  color:#333;
+  text-align:center;
+  padding:2rem;
+  position:relative;
+  overflow-y:auto;
+}
+
+/* 葉っぱっぽいモチーフ */
+body::before {
+  content:"";
+  position:fixed;
+  top:-50px;
+  left:-50px;
+  width:120%;
+  height:120%;
+  background-image:
+    radial-gradient(rgba(150,200,150,0.1) 20%,transparent 20%),
+    radial-gradient(rgba(130,180,130,0.05) 20%,transparent 20%);
+  background-position:0 0,25px 25px;
+  background-size:50px 50px;
+  z-index:-1;
+}
+
+h1 {color:#2f5d50;font-size:1.8rem;margin-bottom:1rem;}
+input {
+  width:80%;
+  max-width:300px;
+  padding:0.6rem;
+  margin:0.3rem 0;
+  border:1px solid #a3c9a8;
+  border-radius:10px;
+  background-color:#f9fff9;
+}
+
+button {
+  background-color:#86cfa3;
+  color:white;
+  border:none;
+  padding:0.6rem 1.2rem;
+  border-radius:20px;
+  font-size:1rem;
+  cursor:pointer;
+  margin-top:1rem;
+  transition:0.3s;
+  box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+#toggleDeletedBtn {
+  display:block;
+  margin:1rem auto;
+  background-color:#a1cfa3;
+}
+
+button:hover {
+  background-color:#6cbf90;
+  transform:translateY(-2px);
+}
+
+table {
+  margin:1.5rem auto;
+  border-collapse:collapse;
+  width:90%;
+  max-width:600px;
+  background:#ffffffd8;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+th,td {border-bottom:1px solid #d8e8da;padding:0.8rem;}
+th {background-color:#e8f5ec;color:#2f5d50;font-weight:bold;}
+td:last-child button {background-color:#ff9d9d;padding:0.3rem 0.8rem;border-radius:10px;font-size:0.8rem;}
+td:last-child button:hover {background-color:#f77373;}
+
+/* 🌸ふわっと浮く花 */
+@keyframes floatFlower {
+  0% {transform:translateY(0) scale(1); opacity:1;}
+  50% {transform:translateY(-40px) scale(1.2); opacity:0.8;}
+  100% {transform:translateY(-80px) scale(0.8); opacity:0;}
+}
+.floating-flower {
+  position:absolute;
+  font-size:1.5rem;
+  pointer-events:none;
+  animation:floatFlower 1.2s ease-out forwards;
+}
+
+/* 🌿カレンダー */
+#calendar {
+  display:block;
+  margin:2rem auto;
+  background-color:#f6fbf7;
+  border-radius:12px;
+  padding:1rem;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+.calendar-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:1rem;
+}
+.calendar-header button {
+  background-color:#a8d5b5;
+  padding:0.3rem 0.8rem;
+  border-radius:10px;
+}
+.calendar-header h3 {margin:0;color:#2f5d50;}
+.calendar-grid {display:grid; grid-template-columns:repeat(7,1fr); gap:5px;}
+.calendar-cell {
+  padding:0.5rem 0;
+  border-radius:8px;
+  background-color:#ffffff;
+  border:1px solid #d8e8da;
+  font-size:0.9rem;
+  position:relative;
+  cursor:pointer;
+}
+.calendar-cell.has-entry::after {
+  content:"🌸";
+  position:absolute;
+  bottom:4px;
+  right:6px;
+  font-size:1rem;
+}
+.calendar-cell.today {background-color:#e8f5ec;font-weight:bold;}
+
+/* 日付選択履歴 */
+#selectedDayHistory {
+  display:block;
+  margin:2rem auto;
+  padding:1rem;
+  background-color:#f6fbf7;
+  border-radius:12px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+  max-width:600px;
+}
+</style>
 </head>
 <body>
-  <h1>three good Things</h1>
-  <input id="good1" placeholder="いいこと1"><br>
-  <input id="good2" placeholder="いいこと2"><br>
-  <input id="good3" placeholder="いいこと3"><br>
-  <button onclick="saveGoodThings()">保存</button>
+<h1>🌿 今日の3つのいいこと</h1>
+<input id="good1" placeholder="いいこと1"><br>
+<input id="good2" placeholder="いいこと2"><br>
+<input id="good3" placeholder="いいこと3"><br>
+<button onclick="saveGoodThings()">保存</button>
 
-  <h2>履歴</h2>
-  <table border="1">
+<h2>🌸 履歴</h2>
+<table>
   <thead>
-    <tr>
-      <th>日付</th>
-      <th>いいこと１</th>
-      <th>いいこと２</th>
-      <th>いいこと３</th>
-    </tr>
+    <tr><th>日付</th><th>いいこと１</th><th>いいこと２</th><th>いいこと３</th></tr>
   </thead>
   <tbody id="history"></tbody>
 </table>
 
-  <script>
-    function saveGoodThings() {
-      const today = new Date().toLocaleDateString();
-      const goodThings = [
-        document.getElementById('good1').value,
-        document.getElementById('good2').value,
-        document.getElementById('good3').value
-      ];
-      localStorage.setItem(today, JSON.stringify(goodThings));
-      showHistory();
-    }
+<button id="toggleDeletedBtn" onclick="toggleDeleted()">🗂️ 削除した履歴を表示</button>
 
-    function showHistory() {
-  const history = document.getElementById('history');
-  history.innerHTML = '';
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    const value = JSON.parse(localStorage.getItem(key));
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${key}</td>
-      <td>${value[0] || ''}</td>
-      <td>${value[1] || ''}</td>
-      <td>${value[2] || ''}</td>
+<div class="deleted-section" id="deletedSection">
+  <h2>🗑️ 削除した履歴（ゴミ箱）</h2>
+  <table>
+    <thead>
+      <tr><th>日付</th><th>いいこと１</th><th>いいこと２</th><th>いいこと３</th></tr>
+    </thead>
+    <tbody id="deletedHistory"></tbody>
+  </table>
+</div>
+
+<!-- 🌿カレンダー -->
+<div id="calendar">
+  <div class="calendar-header">
+    <button onclick="prevMonth()">←</button>
+    <h3 id="calendarTitle"></h3>
+    <button onclick="nextMonth()">→</button>
+  </div>
+  <div class="calendar-grid" id="calendarGrid"></div>
+</div>
+
+<!-- 選択日表示 -->
+<div id="selectedDayHistory"></div>
+
+<script>
+// 🌸保存処理＋花アニメ＋カレンダー更新
+function saveGoodThings(){
+  const timestamp = Date.now();
+  const goodThings = [
+    document.getElementById('good1').value,
+    document.getElementById('good2').value,
+    document.getElementById('good3').value
+  ];
+  localStorage.setItem(timestamp,JSON.stringify(goodThings));
+  showHistory();
+  renderCalendar();
+
+  // 🌸花アニメ
+  const flower = document.createElement('div');
+  flower.className='floating-flower';
+  flower.textContent='🌸';
+  document.body.appendChild(flower);
+  const btn = document.querySelector('button[onclick="saveGoodThings()"]');
+  const rect = btn.getBoundingClientRect();
+  flower.style.left = rect.left+rect.width/2+'px';
+  flower.style.top = rect.top+'px';
+  flower.addEventListener('animationend',()=>flower.remove());
+}
+
+// 履歴表示
+function showHistory(){
+  const history=document.getElementById('history');
+  history.innerHTML='';
+  const keys=[];
+  for(let i=0;i<localStorage.length;i++){
+    const key=localStorage.key(i);
+    if(!key.startsWith('deleted_') && !isNaN(Number(key))) keys.push(Number(key));
+  }
+  keys.sort((a,b)=>b-a);
+  keys.forEach(keyNum=>{
+    const value=JSON.parse(localStorage.getItem(String(keyNum)));
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td>${new Date(keyNum).toLocaleString()}</td>
+      <td>${value[0]||''}</td>
+      <td>${value[1]||''}</td>
+      <td>${value[2]||''}</td>
+      <td><button class="delete-btn" data-key="${keyNum}">削除</button></td>
     `;
     history.appendChild(tr);
+  });
+
+  document.querySelectorAll('.delete-btn').forEach(btn=>{
+    btn.onclick=e=>{
+      const key=e.target.getAttribute('data-key');
+      const deletedItem=localStorage.getItem(key);
+      localStorage.setItem(`deleted_${key}`,deletedItem);
+      localStorage.removeItem(key);
+      showHistory();
+      showDeletedHistory();
+      renderCalendar();
+      showSelectedDayHistory(); // 日付選択表示更新
+    };
+  });
+}
+
+// 削除履歴表示
+function showDeletedHistory(){
+  const deletedTable=document.getElementById('deletedHistory');
+  deletedTable.innerHTML='';
+  const keys=[];
+  for(let i=0;i<localStorage.length;i++){
+    const key=localStorage.key(i);
+    if(key.startsWith('deleted_')) keys.push(key);
+  }
+  keys.sort((a,b)=>b.localeCompare(a));
+  keys.forEach(key=>{
+    const value=JSON.parse(localStorage.getItem(key));
+    const dateStr=new Date(Number(key.replace('deleted_',''))).toLocaleString();
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td>${dateStr}</td>
+      <td>${value[0]||''}</td>
+      <td>${value[1]||''}</td>
+      <td>${value[2]||''}</td>
+    `;
+    deletedTable.appendChild(tr);
+  });
+}
+
+function toggleDeleted(){
+  const section=document.getElementById('deletedSection');
+  section.style.display=section.style.display==='none'?'block':'none';
+  showDeletedHistory();
+}
+
+// 🌿カレンダー
+let currentMonth=new Date();
+function renderCalendar(){
+  const year=currentMonth.getFullYear();
+  const month=currentMonth.getMonth();
+  const firstDay=new Date(year,month,1);
+  const lastDay=new Date(year,month+1,0);
+  const grid=document.getElementById('calendarGrid');
+  grid.innerHTML='';
+  document.getElementById('calendarTitle').textContent=`${year}年 ${month+1}月`;
+
+  const startWeek=firstDay.getDay();
+  for(let i=0;i<startWeek;i++){grid.appendChild(document.createElement('div'))}
+
+  const today=new Date();
+  const entries=getEntryDates();
+
+  for(let d=1;d<=lastDay.getDate();d++){
+    const cell=document.createElement('div');
+    cell.className='calendar-cell';
+    const date=new Date(year,month,d);
+    cell.textContent=d;
+
+    if(date.getFullYear()===today.getFullYear() &&
+       date.getMonth()===today.getMonth() &&
+       date.getDate()===today.getDate()) cell.classList.add('today');
+
+    const dateStr=date.toLocaleDateString();
+    if(entries.includes(dateStr)) cell.classList.add('has-entry');
+
+    // クリックで選択日表示
+    cell.onclick=()=>{ showSelectedDayHistory(dateStr); }
+
+    grid.appendChild(cell);
   }
 }
 
-    showHistory();
+function getEntryDates(){
+  const dates=[];
+  for(let i=0;i<localStorage.length;i++){
+    const key=localStorage.key(i);
+    if(!key.startsWith('deleted_') && !isNaN(Number(key))){
+      const d=new Date(Number(key)).toLocaleDateString();
+      if(!dates.includes(d)) dates.push(d);
+    }
+  }
+  return dates;
+}
 
-  if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('Service Worker 登録成功:', reg))
-      .catch(err => console.log('Service Worker 登録失敗:', err));
+function prevMonth(){ currentMonth.setMonth(currentMonth.getMonth()-1); renderCalendar(); }
+function nextMonth(){ currentMonth.setMonth(currentMonth.getMonth()+1); renderCalendar(); }
+
+// 選択日履歴表示
+function showSelectedDayHistory(dateStr){
+  const container=document.getElementById('selectedDayHistory');
+  container.innerHTML=`<h3>${dateStr} の記録</h3>`;
+  const keys=[];
+  for(let i=0;i<localStorage.length;i++){
+    const key=localStorage.key(i);
+    if(!key.startsWith('deleted_') && !isNaN(Number(key))){
+      const kDate=new Date(Number(key)).toLocaleDateString();
+      if(kDate===dateStr) keys.push(Number(key));
+    }
+  }
+  keys.sort((a,b)=>b-a);
+  if(keys.length===0){
+    container.innerHTML+=`<p>記録なし</p>`;
+    return;
+  }
+  keys.forEach(k=>{
+    const value=JSON.parse(localStorage.getItem(String(k)));
+    container.innerHTML+=`
+      <ul>
+        <li>${value[0]||''}</li>
+        <li>${value[1]||''}</li>
+        <li>${value[2]||''}</li>
+      </ul>
+    `;
   });
 }
-  
-  </script>
+
+// 🔔 21:00通知（ブラウザが開いている間のみ）
+function requestNotificationPermission(){
+  if("Notification" in window){
+    Notification.requestPermission().then(permission=>{
+      if(permission==="granted") scheduleDailyNotification();
+    });
+  }
+}
+
+function scheduleDailyNotification(){
+  const now=new Date();
+  let next21=new Date();
+  next21.setHours(21,0,0,0);
+  if(now>next21) next21.setDate(next21.getDate()+1);
+  const timeout=next21.getTime()-now.getTime();
+
+  setTimeout(()=>{
+    showNotification();
+    setInterval(showNotification,24*60*60*1000);
+  },timeout);
+}
+
+function showNotification(){
+  if("Notification" in window && Notification.permission==="granted"){
+    new Notification("🌸 今日の3つのいいことを記録しよう！",{
+      body:"21:00になりました。今日のいいことを書きましょう🌿",
+      icon:"kyattorabinngu.png"
+    });
+  }
+}
+
+// 初期表示
+showHistory();
+renderCalendar();
+window.onload=requestNotificationPermission;
+
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("sw.js").then(()=>console.log("Service Worker 登録完了！"));
+}
+</script>
 </body>
 </html>
-
