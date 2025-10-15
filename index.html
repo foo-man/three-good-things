@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>今日の3つのいいこと 🌿</title>
-<link rel="manifest" href="manifest.json">
 <style>
-body {
-  font-family: "Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;
-  background: linear-gradient(180deg,#eef8f3 0%,#ffffff 100%);
+/* ------------------- 全体 ------------------- */
+body{
+  font-family:"Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;
+  background:linear-gradient(180deg,#eef8f3 0%,#ffffff 100%);
   color:#2f3e34;
   text-align:center;
-  padding:1rem;
-  margin:0;
-  overflow-y:auto;
+  margin:0;padding:1rem;
+  overflow-x:hidden;
   position:relative;
 }
 
+/* ドット背景 */
 body::before {
   content:"";
   position:fixed;
@@ -25,212 +25,128 @@ body::before {
   width:120%;
   height:120%;
   background-image:
-    radial-gradient(rgba(150,200,150,0.08) 20%,transparent 20%),
-    radial-gradient(rgba(130,180,130,0.04) 20%,transparent 20%);
-  background-position:0 0,25px 25px;
-  background-size:50px 50px;
-  z-index:-1;
+    radial-gradient(rgba(150,200,150,0.08) 20%, transparent 20%),
+    radial-gradient(rgba(130,180,130,0.04) 20%, transparent 20%);
+  background-position: 0 0, 25px 25px;
+  background-size: 50px 50px;
+  z-index: -1;
+  pointer-events: none;
 }
 
+h1{ color:#356d58; font-size:1.8rem; margin:1rem 0; }
 
-/* 柔らかいタイトル */
-h1 {
-  color:#356d58;
-  font-size:1.8rem;
-  margin:1rem 0;
-}
-
-/* 入力カード */
-.input-card {
-  background:#ffffff;
-  border-radius:16px;
-  padding:1rem;
+/* ------------------- 入力フォーム ------------------- */
+.input-card{
+  background:#fff;border-radius:16px;padding:1rem;
   box-shadow:0 2px 8px rgba(0,0,0,0.05);
-  margin:1rem auto 2rem;
-  max-width:400px;
+  max-width:400px;margin:1rem auto 2rem;
 }
-.input-card input {
-  width:90%;
-  max-width:300px;
-  padding:0.6rem;
-  margin:0.3rem 0;
-  border:1px solid #a3c9a8;
-  border-radius:10px;
-  background-color:#f9fff9;
+.input-card input,.input-card textarea{
+  width:90%;max-width:300px;padding:0.6rem;
+  border:1px solid #a3c9a8;border-radius:10px;
+  margin:0.3rem 0;background:#f9fff9;font-size:1rem;
 }
-.input-card button {
-  background-color:#86cfa3;
-  color:white;
-  border:none;
-  padding:0.6rem 1.2rem;
-  border-radius:20px;
-  font-size:1rem;
-  cursor:pointer;
-  margin-top:1rem;
-  transition:0.3s;
-}
-.input-card button:hover {
-  background-color:#6cbf90;
-  transform:translateY(-2px);
-}
+.input-card textarea{ resize:none;height:60px; }
 
-/* 履歴カード */
-.history-card {
-  background:#ffffff;
-  border:1px solid #d8e8da;
-  border-radius:12px;
-  box-shadow:0 1px 6px rgba(0,0,0,0.08);
-  padding:1rem;
-  margin:1rem auto;
-  max-width:600px;
-  text-align:left;
+/* ------------------- ボタン ------------------- */
+.btn{
+  background-color:#86cfa3;color:white;border:none;
+  padding:0.6rem 1.2rem;border-radius:20px;
+  font-size:1rem;cursor:pointer;margin:1rem auto;transition:0.3s;
 }
-.history-card h3 {
-  margin:0 0 0.4rem;
-  color:#355f4a;
-}
-.history-card ul {
-  list-style:none;
-  margin:0;
-  padding:0;
-}
-.history-card li {
-  background:#f4faf6;
-  margin:0.2rem 0;
-  padding:0.4rem 0.6rem;
-  border-radius:8px;
-  word-break:break-word;
-}
-.history-card button {
-  background-color:#ff9d9d;
-  color:white;
-  border:none;
-  padding:0.4rem 0.8rem;
-  border-radius:10px;
-  font-size:0.9rem;
-  margin-top:0.5rem;
-  cursor:pointer;
-}
-.history-card button:hover { background-color:#f77373; }
+.btn:hover{ background-color:#6cbf90; transform:translateY(-2px); }
 
-/* 削除履歴 */
-#deletedSection {
-  display:none;
-  margin-top:2rem;
-}
-#toggleDeletedBtn {
-  background-color:#a3cfa3;
-  color:white;
-  border:none;
-  padding:0.6rem 1.2rem;
-  border-radius:20px;
-  font-size:1rem;
-  cursor:pointer;
-  margin:1rem auto;
-  display:block;
-}
-#toggleDeletedBtn:hover {
-  background-color:#8cc790;
-}
-
-/* カレンダー */
-#calendar {
-  margin:2rem auto;
-  background-color:#f6fbf7;
-  border-radius:12px;
-  padding:1rem;
+/* ------------------- カレンダー ------------------- */
+#calendar{
+  max-width:600px;margin:2rem auto;padding:1rem;
+  background:#f6fbf7;border-radius:12px;
   box-shadow:0 2px 6px rgba(0,0,0,0.1);
-  max-width:600px;
+  position:relative; z-index:0;
 }
-.calendar-header {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:1rem;
+.calendar-header{ display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem; }
+.calendar-header button{ background:#a8d5b5;border:none;padding:0.3rem 0.8rem;border-radius:10px;cursor:pointer; }
+.calendar-grid{ display:grid;grid-template-columns:repeat(7,1fr);gap:5px; }
+.calendar-cell{
+  padding:0.6rem 0;border-radius:8px;background:#fff;border:1px solid #d8e8da;
+  cursor:pointer;position:relative;
 }
-.calendar-header button {
-  background-color:#a8d5b5;
-  border:none;
-  padding:0.3rem 0.8rem;
-  border-radius:10px;
-  cursor:pointer;
-}
-.calendar-header h3 {
-  margin:0;
-  color:#2f5d50;
-}
-.calendar-grid {
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:5px;
-}
-.calendar-cell {
-  padding:0.6rem 0;
-  border-radius:8px;
-  background-color:#ffffff;
-  border:1px solid #d8e8da;
-  font-size:0.9rem;
-  cursor:pointer;
-  position:relative;
-}
-.calendar-cell.has-entry::after {
-  content:"🌸";
-  position:absolute;
-  bottom:4px;
-  right:6px;
-  font-size:1rem;
-}
-.calendar-cell.today {
-  background-color:#e8f5ec;
-  font-weight:bold;
+.calendar-cell.has-entry::after{
+  content:"🌸";position:absolute;bottom:4px;right:6px;font-size:1rem;
 }
 
-/* 選択日履歴 */
-#selectedDayHistory {
-  background-color:#f6fbf7;
-  border-radius:12px;
-  box-shadow:0 2px 6px rgba(0,0,0,0.1);
-  padding:1rem;
-  margin:1.5rem auto;
-  max-width:600px;
-  text-align:left;
+/* ------------------- モーダル ------------------- */
+.modal{
+  display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0);justify-content:center;align-items:flex-start;
+  overflow-y:auto;z-index:1000;transition:background 0.3s ease;
+}
+.modal.show{ display:flex; }
+.modal.show-animate{ background:rgba(0,0,0,0.4); }
+
+/* モーダルコンテンツ：内部スクロール可能にする */
+.modal-content{
+  background:#fff;border-radius:16px;margin:3rem auto;padding:1rem;
+  max-width:500px;width:90%;box-shadow:0 4px 12px rgba(0,0,0,0.2);
+  opacity:0; transform:translateY(-30px) scale(0.94);
+  transition:opacity 0.36s cubic-bezier(.2,.9,.2,1), transform 0.36s cubic-bezier(.2,.9,.2,1);
+
+  max-height: calc(100vh - 6rem);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+}
+.modal.show-animate .modal-content{
+  opacity:1; transform:translateY(0) scale(1);
 }
 
-/* 花アニメーション */
-@keyframes floatFlower {
-  0% {transform:translateY(0) scale(1);opacity:1;}
-  50% {transform:translateY(-40px) scale(1.2);opacity:0.8;}
-  100% {transform:translateY(-80px) scale(0.8);opacity:0;}
+/* ------------------- 履歴カード ------------------- */
+.history-card{
+  background:#fff;border:1px solid #d8e8da;border-radius:12px;
+  box-shadow:0 1px 6px rgba(0,0,0,0.08);padding:1rem;margin:0.5rem auto;
+  max-width:500px;text-align:left;
 }
-.floating-flower {
-  position:absolute;
-  font-size:1.5rem;
-  pointer-events:none;
-  animation:floatFlower 1.2s ease-out forwards;
+.history-card h3{ margin:0 0 0.4rem;color:#355f4a; }
+.history-card ul{ list-style:none;margin:0;padding:0; }
+.history-card li{
+  background:#f4faf6;margin:0.2rem 0;padding:0.4rem 0.6rem;border-radius:8px;word-break:break-word;
+}
+.comment-box{
+  margin-top:0.5rem;font-style:italic;color:#4b6653;background:#f9fff9;padding:0.5rem 0.7rem;
+  border-left:4px solid #a3cfa3;border-radius:6px;
+}
+.history-card button{
+  background:#ff9d9d;color:white;border:none;padding:0.4rem 0.8rem;border-radius:10px;
+  font-size:0.9rem;margin-top:0.5rem;cursor:pointer;
+}
+.history-card button:hover{ background:#f77373; }
+
+/* ------------------- 日付選択 ------------------- */
+#entryDateInput{ margin-bottom:0.5rem;font-size:1rem; }
+
+/* ------------------- 桜 ------------------- */
+.sakura{ position:fixed; top:-2rem; pointer-events:none; z-index:2000; animation:sakuraFall 2.5s linear forwards; }
+@keyframes sakuraFall{ 0%{ transform:translateY(0) rotate(0deg); opacity:1; } 100%{ transform:translateY(100vh) rotate(360deg); opacity:0; } }
+
+/* レスポンシブ */
+@media (max-width:420px){
+  .input-card,.modal-content{ padding:0.8rem; }
+  .btn{ padding:0.5rem 1rem; }
 }
 </style>
 </head>
 <body>
-<h1>🌿 今日の3つのいいこと</h1>
+
+<h1>🍀 今日の3つのいいこと 🍀</h1>
 
 <div class="input-card">
-  <input id="good1" placeholder="いいこと1"><br>
-  <input id="good2" placeholder="いいこと2"><br>
-  <input id="good3" placeholder="いいこと3"><br>
-  <button onclick="saveGoodThings()">保存</button>
+  <input type="date" id="entryDateInput"><br>
+  <input id="good1" placeholder="いいこと①"><br>
+  <input id="good2" placeholder="いいこと②"><br>
+  <input id="good3" placeholder="いいこと③"><br>
+  <textarea id="comment" placeholder="今日のひとことメモ"></textarea><br>
+  <button class="btn" onclick="saveGoodThings()">保存</button>
 </div>
 
-<h2>📖 今日までの記録</h2>
-<div id="history"></div>
-
-<button id="toggleDeletedBtn" onclick="toggleDeleted()">🗂️ 削除した履歴を表示</button>
-
-<div id="deletedSection">
-  <h2>🗑️ 削除した履歴（ゴミ箱）</h2>
-  <div id="deletedHistory"></div>
-</div>
-
-<!-- カレンダー -->
 <div id="calendar">
   <div class="calendar-header">
     <button onclick="prevMonth()">←</button>
@@ -240,218 +156,270 @@ h1 {
   <div class="calendar-grid" id="calendarGrid"></div>
 </div>
 
-<div id="selectedDayHistory"></div>
+<button class="btn" onclick="showAllHistory()">📖 すべての履歴を見る</button>
+
+<!-- モーダル -->
+<div id="historyModal" class="modal" onclick="closeModal(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div id="modalNav" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <button id="prevDayBtn" class="btn" style="width:45%;padding:0.5rem;">前日</button>
+      <button id="nextDayBtn" class="btn" style="width:45%;padding:0.5rem;">翌日</button>
+    </div>
+    <h2 id="modalDateTitle">📅</h2>
+    <div id="historyList"></div>
+  </div>
+</div>
 
 <script>
-function saveGoodThings(){
-  const timestamp=Date.now();
-  const goodThings=[
-    document.getElementById('good1').value,
-    document.getElementById('good2').value,
-    document.getElementById('good3').value
-  ];
-  localStorage.setItem(timestamp,JSON.stringify(goodThings));
-  showHistory();
-  renderCalendar();
+/* ---------- 状態 ---------- */
+let selectedDate = new Date();
+let modalDate = new Date();
+let isShowingAllHistory = false;
 
+/* 保存（スクロール幅補正用） */
+let _lockedScrollY = 0;
+let _savedBodyPaddingRight = '';
+
+/* ---------- ヘルパー ---------- */
+function formatDate(d){
+  const y = d.getFullYear();
+  const m = ('0'+(d.getMonth()+1)).slice(-2);
+  const day = ('0'+d.getDate()).slice(-2);
+  return `${y}-${m}-${day}`;
+}
+
+/* ---------- スクロールバー幅取得 ---------- */
+function getScrollbarWidth(){
+  // window.innerWidth - documentElement.clientWidth が信頼できる
+  return window.innerWidth - document.documentElement.clientWidth;
+}
+
+/* ---------- BODY スクロールロック（補正あり） ---------- */
+function lockBodyScroll(){
+  // 現在のスクロール位置を保存
+  _lockedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+
+  // スクロールバー幅を取得して body に padding-right を追加（幅ずれを防ぐ）
+  const sbWidth = getScrollbarWidth();
+  if(sbWidth > 0){
+    // 元々の padding-right を保存しておく
+    _savedBodyPaddingRight = document.body.style.paddingRight || '';
+    // 既存の padding-right を考慮して合成する（既に指定がある場合は数値にして足す）
+    const current = parseFloat(getComputedStyle(document.body).paddingRight) || 0;
+    document.body.style.paddingRight = (current + sbWidth) + 'px';
+  }
+
+  // 固定して位置保持
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${_lockedScrollY}px`;
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+}
+
+function unlockBodyScroll(){
+  // 元の固定解除
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.left = '';
+  document.body.style.right = '';
+
+  // padding-right を元に戻す（保存された値があればそれを入れる）
+  if(_savedBodyPaddingRight !== ''){
+    document.body.style.paddingRight = _savedBodyPaddingRight;
+  } else {
+    // 元が空なら消す
+    document.body.style.paddingRight = '';
+  }
+
+  // スクロール位置を復元
+  window.scrollTo(0, _lockedScrollY);
+  _savedBodyPaddingRight = '';
+}
+
+/* ---------- 保存 ---------- */
+function saveGoodThings(){
+  const key = document.getElementById('entryDateInput').value || formatDate(new Date());
+  const data = {
+    goodThings:[
+      document.getElementById('good1').value,
+      document.getElementById('good2').value,
+      document.getElementById('good3').value
+    ],
+    comment: document.getElementById('comment').value
+  };
+  localStorage.setItem(key, JSON.stringify(data));
+  renderCalendar();
   document.getElementById('good1').value='';
   document.getElementById('good2').value='';
   document.getElementById('good3').value='';
-
-  const flower=document.createElement('div');
-  flower.className='floating-flower';
-  flower.textContent='🌸';
-  document.body.appendChild(flower);
-  const btn=document.querySelector('.input-card button');
-  const rect=btn.getBoundingClientRect();
-  flower.style.left=rect.left+rect.width/2+'px';
-  flower.style.top=rect.top+'px';
-  flower.addEventListener('animationend',()=>flower.remove());
+  document.getElementById('comment').value='';
+  createSakura();
 }
 
-// 履歴表示（カード型）
-function showHistory(){
-  const history=document.getElementById('history');
-  history.innerHTML='';
-  const keys=[];
-  for(let i=0;i<localStorage.length;i++){
-    const key=localStorage.key(i);
-    if(!key.startsWith('deleted_') && !isNaN(Number(key))) keys.push(Number(key));
-  }
-  keys.sort((a,b)=>b-a);
-  keys.forEach(keyNum=>{
-    const value=JSON.parse(localStorage.getItem(String(keyNum)));
-    const div=document.createElement('div');
-    div.className='history-card';
-    div.innerHTML=`
-      <h3>${new Date(keyNum).toLocaleString()}</h3>
-      <ul>
-        <li>① ${value[0]||''}</li>
-        <li>② ${value[1]||''}</li>
-        <li>③ ${value[2]||''}</li>
-      </ul>
-      <button data-key="${keyNum}">削除</button>
-    `;
-    history.appendChild(div);
-  });
-
-  document.querySelectorAll('.history-card button').forEach(btn=>{
-    btn.onclick=e=>{
-      const key=e.target.getAttribute('data-key');
-      const deletedItem=localStorage.getItem(key);
-      localStorage.setItem(`deleted_${key}`,deletedItem);
-      localStorage.removeItem(key);
-      showHistory();
-      showDeletedHistory();
-      renderCalendar();
-      showSelectedDayHistory();
-    };
-  });
-}
-
-// 削除履歴
-function showDeletedHistory(){
-  const container=document.getElementById('deletedHistory');
-  container.innerHTML='';
-  const keys=[];
-  for(let i=0;i<localStorage.length;i++){
-    const key=localStorage.key(i);
-    if(key.startsWith('deleted_')) keys.push(key);
-  }
-  keys.sort((a,b)=>b.localeCompare(a));
-  keys.forEach(key=>{
-    const value=JSON.parse(localStorage.getItem(key));
-    const div=document.createElement('div');
-    div.className='history-card';
-    div.innerHTML=`
-      <h3>${new Date(Number(key.replace('deleted_',''))).toLocaleString()}</h3>
-      <ul>
-        <li>① ${value[0]||''}</li>
-        <li>② ${value[1]||''}</li>
-        <li>③ ${value[2]||''}</li>
-      </ul>
-    `;
-    container.appendChild(div);
-  });
-}
-
-function toggleDeleted(){
-  const section=document.getElementById('deletedSection');
-  section.style.display=section.style.display==='none'?'block':'none';
-  showDeletedHistory();
-}
-
-// カレンダー
-let currentMonth=new Date();
+/* ---------- カレンダー ---------- */
 function renderCalendar(){
-  const year=currentMonth.getFullYear();
-  const month=currentMonth.getMonth();
-  const firstDay=new Date(year,month,1);
-  const lastDay=new Date(year,month+1,0);
-  const grid=document.getElementById('calendarGrid');
-  grid.innerHTML='';
-  document.getElementById('calendarTitle').textContent=`${year}年 ${month+1}月`;
+  const grid = document.getElementById('calendarGrid');
+  grid.innerHTML = '';
+  const year = selectedDate.getFullYear();
+  const month = selectedDate.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month+1, 0);
+  document.getElementById('calendarTitle').textContent = `${year}年 ${month+1}月`;
 
-  const startWeek=firstDay.getDay();
-  for(let i=0;i<startWeek;i++) grid.appendChild(document.createElement('div'));
+  const weekdays = ['日','月','火','水','木','金','土'];
+  weekdays.forEach((d,i)=>{
+    const c = document.createElement('div');
+    c.textContent = d;
+    c.style.fontWeight = 'bold';
+    if(i===0) c.style.color = '#e74c3c';
+    if(i===6) c.style.color = '#3498db';
+    grid.appendChild(c);
+  });
 
-  const today=new Date();
-  const entries=getEntryDates();
-
-  for(let d=1;d<=lastDay.getDate();d++){
-    const cell=document.createElement('div');
-    cell.className='calendar-cell';
-    const date=new Date(year,month,d);
-    cell.textContent=d;
-
-    if(date.toDateString()===today.toDateString()) cell.classList.add('today');
-    const dateStr=date.toLocaleDateString();
-    if(entries.includes(dateStr)) cell.classList.add('has-entry');
-
-    cell.onclick=()=>showSelectedDayHistory(dateStr);
+  for(let i=0;i<firstDay.getDay();i++) grid.appendChild(document.createElement('div'));
+  for(let d=1; d<=lastDay.getDate(); d++){
+    const date = new Date(year, month, d);
+    const key = formatDate(date);
+    const cell = document.createElement('div');
+    cell.className = 'calendar-cell';
+    if(localStorage.getItem(key)) cell.classList.add('has-entry');
+    cell.textContent = d;
+    cell.onclick = ()=> showHistoryModal(date);
     grid.appendChild(cell);
   }
 }
-function getEntryDates(){
-  const dates=[];
-  for(let i=0;i<localStorage.length;i++){
-    const key=localStorage.key(i);
-    if(!key.startsWith('deleted_') && !isNaN(Number(key))){
-      const d=new Date(Number(key)).toLocaleDateString();
-      if(!dates.includes(d)) dates.push(d);
-    }
-  }
-  return dates;
-}
-function prevMonth(){ currentMonth.setMonth(currentMonth.getMonth()-1); renderCalendar(); }
-function nextMonth(){ currentMonth.setMonth(currentMonth.getMonth()+1); renderCalendar(); }
+function prevMonth(){ selectedDate.setMonth(selectedDate.getMonth()-1); renderCalendar(); }
+function nextMonth(){ selectedDate.setMonth(selectedDate.getMonth()+1); renderCalendar(); }
 
-function showSelectedDayHistory(dateStr){
-  const container=document.getElementById('selectedDayHistory');
-  container.innerHTML=`<h3>${dateStr} の記録</h3>`;
-  const keys=[];
-  for(let i=0;i<localStorage.length;i++){
-    const key=localStorage.key(i);
-    if(!key.startsWith('deleted_') && !isNaN(Number(key))){
-      const kDate=new Date(Number(key)).toLocaleDateString();
-      if(kDate===dateStr) keys.push(Number(key));
-    }
+/* ---------- モーダル表示 ---------- */
+function showHistoryModal(date){
+  modalDate = new Date(date);
+  isShowingAllHistory = false;
+  const modal = document.getElementById('historyModal');
+  const list = document.getElementById('historyList');
+  const title = document.getElementById('modalDateTitle');
+  const key = formatDate(modalDate);
+  const data = JSON.parse(localStorage.getItem(key));
+
+  title.textContent = `📅 ${key}`;
+  list.innerHTML = '';
+  document.getElementById('modalNav').style.display = 'flex';
+
+  if(data){
+    const card = document.createElement('div');
+    card.className = 'history-card';
+    card.innerHTML = `<h3>${key}</h3>
+      <ul>
+        <li>① ${data.goodThings[0]||''}</li>
+        <li>② ${data.goodThings[1]||''}</li>
+        <li>③ ${data.goodThings[2]||''}</li>
+      </ul>
+      ${data.comment?`<div class="comment-box">${data.comment}</div>`:''}
+      <button onclick="deleteEntry('${key}')">削除</button>`;
+    list.appendChild(card);
+  } else {
+    list.innerHTML = '<p>まだ履歴がありません</p>';
   }
-  keys.sort((a,b)=>b-a);
-  if(keys.length===0){
-    container.innerHTML+='<p>記録なし</p>';
-    return;
-  }
-  keys.forEach(k=>{
-    const v=JSON.parse(localStorage.getItem(String(k)));
-    container.innerHTML+=`
-      <div class="history-card">
-        <h3>${new Date(k).toLocaleTimeString()}</h3>
-        <ul>
-          <li>① ${v[0]||''}</li>
-          <li>② ${v[1]||''}</li>
-          <li>③ ${v[2]||''}</li>
-        </ul>
-      </div>`;
+
+  lockBodyScroll();
+  modal.classList.add('show');
+  requestAnimationFrame(()=>{
+    void modal.offsetWidth;
+    modal.classList.add('show-animate');
+    const content = modal.querySelector('.modal-content');
+    if(content) content.scrollTop = 0;
   });
 }
 
-// 通知
-function requestNotificationPermission(){
-  if("Notification" in window){
-    Notification.requestPermission().then(permission=>{
-      if(permission==="granted") scheduleDailyNotification();
-    });
-  }
-}
-function scheduleDailyNotification(){
-  const now=new Date();
-  let next21=new Date();
-  next21.setHours(21,0,0,0);
-  if(now>next21) next21.setDate(next21.getDate()+1);
-  const timeout=next21.getTime()-now.getTime();
+function closeModal(e){
+  if(!e.target.classList.contains('modal')) return;
+  const modal = e.target;
+  modal.classList.remove('show-animate');
   setTimeout(()=>{
-    showNotification();
-    setInterval(showNotification,24*60*60*1000);
-  },timeout);
+    modal.classList.remove('show');
+    unlockBodyScroll();
+  }, 360);
 }
-function showNotification(){
-  if("Notification" in window && Notification.permission==="granted"){
-    new Notification("🌸 今日の3つのいいことを記録しよう！",{
-      body:"21:00になりました。今日のいいことを書きましょう🌿",
-      icon:"kyattorabinngu.png"
+function prevDay(){ modalDate.setDate(modalDate.getDate()-1); showHistoryModal(modalDate); }
+function nextDay(){ modalDate.setDate(modalDate.getDate()+1); showHistoryModal(modalDate); }
+document.getElementById('prevDayBtn').onclick = prevDay;
+document.getElementById('nextDayBtn').onclick = nextDay;
+
+/* ---------- 全履歴 ---------- */
+function showAllHistory(){
+  isShowingAllHistory = true;
+  const modal = document.getElementById('historyModal');
+  const list = document.getElementById('historyList');
+  const title = document.getElementById('modalDateTitle');
+  list.innerHTML = '';
+  title.textContent = '📖 すべての履歴';
+  document.getElementById('modalNav').style.display = 'none';
+
+  const keys = Object.keys(localStorage).sort().reverse();
+  if(keys.length === 0){
+    list.innerHTML = '<p>まだ履歴がありません</p>';
+  } else {
+    keys.forEach(k=>{
+      const d = JSON.parse(localStorage.getItem(k));
+      if(!d) return;
+      const card = document.createElement('div');
+      card.className = 'history-card';
+      card.innerHTML = `<h3>${k}</h3>
+        <ul>
+          <li>① ${d.goodThings[0]||''}</li>
+          <li>② ${d.goodThings[1]||''}</li>
+          <li>③ ${d.goodThings[2]||''}</li>
+        </ul>
+        ${d.comment?`<div class="comment-box">${d.comment}</div>`:''}
+        <button onclick="deleteEntry('${k}')">削除</button>`;
+      list.appendChild(card);
     });
+  }
+
+  lockBodyScroll();
+  modal.classList.add('show');
+  requestAnimationFrame(()=>{ void modal.offsetWidth; modal.classList.add('show-animate'); });
+  const content = modal.querySelector('.modal-content');
+  if(content) content.scrollTop = 0;
+}
+
+/* ---------- 削除 ---------- */
+function deleteEntry(key){
+  if(!confirm('この記録を削除してもよろしいですか?')) return;
+  localStorage.removeItem(key);
+  renderCalendar();
+  if(isShowingAllHistory) showAllHistory();
+  else showHistoryModal(modalDate);
+}
+
+/* ---------- 桜 ---------- */
+function createSakura(){
+  for(let i=0;i<12;i++){
+    const s = document.createElement('div');
+    s.className = 'sakura';
+    s.textContent = '🌸';
+    s.style.left = (Math.random()*88 + 6) + '%';
+    s.style.fontSize = (14 + Math.random()*28) + 'px';
+    s.style.animationDuration = (2 + Math.random()*1.2) + 's';
+    document.body.appendChild(s);
+    setTimeout(()=> s.remove(), 3200);
   }
 }
 
-// 初期表示
-showHistory();
-renderCalendar();
-window.onload=requestNotificationPermission;
-
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("sw.js").then(()=>console.log("Service Worker 登録完了！"));
-}
+/* ---------- 初期化 ---------- */
+window.onload = ()=>{
+  document.getElementById('entryDateInput').value = formatDate(new Date());
+  renderCalendar();
+  window.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape'){
+      const modal = document.getElementById('historyModal');
+      if(modal.classList.contains('show')) {
+        modal.classList.remove('show-animate');
+        setTimeout(()=>{ modal.classList.remove('show'); unlockBodyScroll(); }, 360);
+      }
+    }
+  });
+};
 </script>
 </body>
 </html>
