@@ -4,6 +4,15 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>今日の3つのいいこと 🌿</title>
+
+<!-- PWA / iOS meta -->
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#86cfa3">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="3つのいいこと">
+<link rel="apple-touch-icon" href="./kyattorabinngu.png">
+
 <style>
 /* ------------------- 全体 ------------------- */
 body{
@@ -16,7 +25,7 @@ body{
   position:relative;
 }
 
-/* ドット背景 */
+/* ドット背景（復活） */
 body::before {
   content:"";
   position:fixed;
@@ -73,12 +82,15 @@ h1{ color:#356d58; font-size:1.8rem; margin:1rem 0; }
 .calendar-cell.has-entry::after{
   content:"🌸";position:absolute;bottom:4px;right:6px;font-size:1rem;
 }
+.calendar-weekday-header { font-weight:bold; }
+.calendar-weekday-header.sunday { color:#e74c3c; }
+.calendar-weekday-header.saturday { color:#3498db; }
 
 /* ------------------- モーダル ------------------- */
 .modal{
   display:none;position:fixed;top:0;left:0;width:100%;height:100%;
   background:rgba(0,0,0,0);justify-content:center;align-items:flex-start;
-  overflow-y:auto;z-index:1000;transition:background 0.3s ease;
+  overflow-y:auto;z-index:1000;transition:background 0.28s ease;
 }
 .modal.show{ display:flex; }
 .modal.show-animate{ background:rgba(0,0,0,0.4); }
@@ -86,8 +98,8 @@ h1{ color:#356d58; font-size:1.8rem; margin:1rem 0; }
 /* モーダルコンテンツ：内部スクロール可能にする */
 .modal-content{
   background:#fff;border-radius:16px;margin:3rem auto;padding:1rem;
-  max-width:500px;width:90%;box-shadow:0 4px 12px rgba(0,0,0,0.2);
-  opacity:0; transform:translateY(-30px) scale(0.94);
+  max-width:520px;width:94%;box-shadow:0 4px 12px rgba(0,0,0,0.2);
+  opacity:0; transform:translateY(-28px) scale(0.96);
   transition:opacity 0.36s cubic-bezier(.2,.9,.2,1), transform 0.36s cubic-bezier(.2,.9,.2,1);
 
   max-height: calc(100vh - 6rem);
@@ -176,9 +188,10 @@ let selectedDate = new Date();
 let modalDate = new Date();
 let isShowingAllHistory = false;
 
-/* 保存（スクロール幅補正用） */
+/* 保存しておく（ロック用） */
 let _lockedScrollY = 0;
 let _savedBodyPaddingRight = '';
+let _useIosScrollLock = /iP(ad|hone|od)/.test(navigator.platform) || navigator.userAgent.includes('Macintosh') && 'ontouchend' in document;
 
 /* ---------- ヘルパー ---------- */
 function formatDate(d){
@@ -190,49 +203,52 @@ function formatDate(d){
 
 /* ---------- スクロールバー幅取得 ---------- */
 function getScrollbarWidth(){
-  // window.innerWidth - documentElement.clientWidth が信頼できる
   return window.innerWidth - document.documentElement.clientWidth;
 }
 
-/* ---------- BODY スクロールロック（補正あり） ---------- */
+/* ---------- BODY スクロールロック（iOS フォールバック含む） ---------- */
 function lockBodyScroll(){
-  // 現在のスクロール位置を保存
   _lockedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
 
-  // スクロールバー幅を取得して body に padding-right を追加（幅ずれを防ぐ）
+  // スクロールバー幅補正（デスクトップ）
   const sbWidth = getScrollbarWidth();
   if(sbWidth > 0){
-    // 元々の padding-right を保存しておく
     _savedBodyPaddingRight = document.body.style.paddingRight || '';
-    // 既存の padding-right を考慮して合成する（既に指定がある場合は数値にして足す）
     const current = parseFloat(getComputedStyle(document.body).paddingRight) || 0;
     document.body.style.paddingRight = (current + sbWidth) + 'px';
   }
 
-  // 固定して位置保持
-  document.body.style.position = 'fixed';
-  document.body.style.top = `-${_lockedScrollY}px`;
-  document.body.style.left = '0';
-  document.body.style.right = '0';
+  if(_useIosScrollLock){
+    // iOS では position:fixed が挙動怪しいので overflow:hidden を使う（body の幅ずれは上の補正で吸収）
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+  } else {
+    // デスクトップでは position:fixed で位置を固定
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${_lockedScrollY}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+  }
 }
 
 function unlockBodyScroll(){
-  // 元の固定解除
-  document.body.style.position = '';
-  document.body.style.top = '';
-  document.body.style.left = '';
-  document.body.style.right = '';
+  if(_useIosScrollLock){
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
+  } else {
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    window.scrollTo(0, _lockedScrollY);
+  }
 
-  // padding-right を元に戻す（保存された値があればそれを入れる）
+  // padding-right を元に戻す
   if(_savedBodyPaddingRight !== ''){
     document.body.style.paddingRight = _savedBodyPaddingRight;
   } else {
-    // 元が空なら消す
     document.body.style.paddingRight = '';
   }
-
-  // スクロール位置を復元
-  window.scrollTo(0, _lockedScrollY);
   _savedBodyPaddingRight = '';
 }
 
@@ -270,9 +286,9 @@ function renderCalendar(){
   weekdays.forEach((d,i)=>{
     const c = document.createElement('div');
     c.textContent = d;
-    c.style.fontWeight = 'bold';
-    if(i===0) c.style.color = '#e74c3c';
-    if(i===6) c.style.color = '#3498db';
+    c.className = 'calendar-weekday-header';
+    if(i===0) c.classList.add('sunday');
+    if(i===6) c.classList.add('saturday');
     grid.appendChild(c);
   });
 
@@ -299,24 +315,35 @@ function showHistoryModal(date){
   const list = document.getElementById('historyList');
   const title = document.getElementById('modalDateTitle');
   const key = formatDate(modalDate);
-  const data = JSON.parse(localStorage.getItem(key));
 
   title.textContent = `📅 ${key}`;
   list.innerHTML = '';
   document.getElementById('modalNav').style.display = 'flex';
 
-  if(data){
-    const card = document.createElement('div');
-    card.className = 'history-card';
-    card.innerHTML = `<h3>${key}</h3>
-      <ul>
-        <li>① ${data.goodThings[0]||''}</li>
-        <li>② ${data.goodThings[1]||''}</li>
-        <li>③ ${data.goodThings[2]||''}</li>
-      </ul>
-      ${data.comment?`<div class="comment-box">${data.comment}</div>`:''}
-      <button onclick="deleteEntry('${key}')">削除</button>`;
-    list.appendChild(card);
+  // 安全に JSON.parse する（非JSON 値が混じっていても例外で停止しない）
+  const raw = localStorage.getItem(key);
+  if(raw){
+    try {
+      const data = JSON.parse(raw);
+      if(data && data.goodThings){
+        const card = document.createElement('div');
+        card.className = 'history-card';
+        card.innerHTML = `<h3>${key}</h3>
+          <ul>
+            <li>① ${data.goodThings[0]||''}</li>
+            <li>② ${data.goodThings[1]||''}</li>
+            <li>③ ${data.goodThings[2]||''}</li>
+          </ul>
+          ${data.comment?`<div class="comment-box">${data.comment}</div>`:''}
+          <button onclick="deleteEntry('${key}')">削除</button>`;
+        list.appendChild(card);
+      } else {
+        list.innerHTML = '<p>まだ履歴がありません</p>';
+      }
+    } catch (err) {
+      console.warn('showHistoryModal: skip invalid JSON for key', key, err);
+      list.innerHTML = '<p>まだ履歴がありません</p>';
+    }
   } else {
     list.innerHTML = '<p>まだ履歴がありません</p>';
   }
@@ -345,7 +372,7 @@ function nextDay(){ modalDate.setDate(modalDate.getDate()+1); showHistoryModal(m
 document.getElementById('prevDayBtn').onclick = prevDay;
 document.getElementById('nextDayBtn').onclick = nextDay;
 
-/* ---------- 全履歴 ---------- */
+/* ---------- 全履歴（iOS で落ちないようにフィルタ＆ try/catch） ---------- */
 function showAllHistory(){
   isShowingAllHistory = true;
   const modal = document.getElementById('historyModal');
@@ -355,24 +382,32 @@ function showAllHistory(){
   title.textContent = '📖 すべての履歴';
   document.getElementById('modalNav').style.display = 'none';
 
-  const keys = Object.keys(localStorage).sort().reverse();
+  // 日付キーのみ（YYYY-MM-DD）にフィルタして列挙 — これで SW などで入れた別キーを無視
+  const keys = Object.keys(localStorage).filter(k=>/^\d{4}-\d{2}-\d{2}$/.test(k)).sort().reverse();
+
   if(keys.length === 0){
     list.innerHTML = '<p>まだ履歴がありません</p>';
   } else {
     keys.forEach(k=>{
-      const d = JSON.parse(localStorage.getItem(k));
-      if(!d) return;
-      const card = document.createElement('div');
-      card.className = 'history-card';
-      card.innerHTML = `<h3>${k}</h3>
-        <ul>
-          <li>① ${d.goodThings[0]||''}</li>
-          <li>② ${d.goodThings[1]||''}</li>
-          <li>③ ${d.goodThings[2]||''}</li>
-        </ul>
-        ${d.comment?`<div class="comment-box">${d.comment}</div>`:''}
-        <button onclick="deleteEntry('${k}')">削除</button>`;
-      list.appendChild(card);
+      const raw = localStorage.getItem(k);
+      if(!raw) return;
+      try {
+        const d = JSON.parse(raw);
+        if(!d || !d.goodThings) return;
+        const card = document.createElement('div');
+        card.className = 'history-card';
+        card.innerHTML = `<h3>${k}</h3>
+          <ul>
+            <li>① ${d.goodThings[0]||''}</li>
+            <li>② ${d.goodThings[1]||''}</li>
+            <li>③ ${d.goodThings[2]||''}</li>
+          </ul>
+          ${d.comment?`<div class="comment-box">${d.comment}</div>`:''}
+          <button onclick="deleteEntry('${k}')">削除</button>`;
+        list.appendChild(card);
+      } catch(err){
+        console.warn('showAllHistory: skip invalid JSON for key', k, err);
+      }
     });
   }
 
@@ -406,14 +441,26 @@ function createSakura(){
   }
 }
 
+/* ---------- Service Worker 登録（キャッシュバスト付き） ---------- */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=> {
+    const swUrl = './sw.js?v=' + Date.now();
+    navigator.serviceWorker.register(swUrl)
+      .then(reg => console.log('SW registered', reg))
+      .catch(err => console.warn('SW registration failed', err));
+  });
+}
+
 /* ---------- 初期化 ---------- */
 window.onload = ()=>{
   document.getElementById('entryDateInput').value = formatDate(new Date());
   renderCalendar();
+
+  // Esc でモーダル閉じる
   window.addEventListener('keydown', (e)=>{
     if(e.key === 'Escape'){
       const modal = document.getElementById('historyModal');
-      if(modal.classList.contains('show')) {
+      if(modal.classList.contains('show')){
         modal.classList.remove('show-animate');
         setTimeout(()=>{ modal.classList.remove('show'); unlockBodyScroll(); }, 360);
       }
