@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>今日の3つのいいこと 🌿</title>
 
-<!-- PWA / iOS meta -->
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#86cfa3">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -24,8 +23,6 @@ body{
   overflow-x:hidden;
   position:relative;
 }
-
-/* ドット背景（復活） */
 body::before {
   content:"";
   position:fixed;
@@ -41,7 +38,6 @@ body::before {
   z-index: -1;
   pointer-events: none;
 }
-
 h1{ color:#356d58; font-size:1.8rem; margin:1rem 0; }
 
 /* ------------------- 入力フォーム ------------------- */
@@ -64,6 +60,7 @@ h1{ color:#356d58; font-size:1.8rem; margin:1rem 0; }
   font-size:1rem;cursor:pointer;margin:1rem auto;transition:0.3s;
 }
 .btn:hover{ background-color:#6cbf90; transform:translateY(-2px); }
+.btn:focus{ outline:3px solid rgba(102,187,141,0.25); outline-offset:2px; }
 
 /* ------------------- カレンダー ------------------- */
 #calendar{
@@ -79,10 +76,12 @@ h1{ color:#356d58; font-size:1.8rem; margin:1rem 0; }
   padding:0.6rem 0;border-radius:8px;background:#fff;border:1px solid #d8e8da;
   cursor:pointer;position:relative;
 }
+.calendar-cell:focus{ box-shadow:0 0 0 3px rgba(102,187,141,0.18); outline:none; }
+.calendar-cell.empty{ background:transparent;border:none;cursor:default; }
 .calendar-cell.has-entry::after{
   content:"🌸";position:absolute;bottom:4px;right:6px;font-size:1rem;
 }
-.calendar-weekday-header { font-weight:bold; }
+.calendar-weekday-header { font-weight:bold; text-align:center; padding:6px 0; }
 .calendar-weekday-header.sunday { color:#e74c3c; }
 .calendar-weekday-header.saturday { color:#3498db; }
 
@@ -94,14 +93,11 @@ h1{ color:#356d58; font-size:1.8rem; margin:1rem 0; }
 }
 .modal.show{ display:flex; }
 .modal.show-animate{ background:rgba(0,0,0,0.4); }
-
-/* モーダルコンテンツ：内部スクロール可能にする */
 .modal-content{
   background:#fff;border-radius:16px;margin:3rem auto;padding:1rem;
   max-width:520px;width:94%;box-shadow:0 4px 12px rgba(0,0,0,0.2);
   opacity:0; transform:translateY(-28px) scale(0.96);
   transition:opacity 0.36s cubic-bezier(.2,.9,.2,1), transform 0.36s cubic-bezier(.2,.9,.2,1);
-
   max-height: calc(100vh - 6rem);
   overflow: auto;
   -webkit-overflow-scrolling: touch;
@@ -148,37 +144,39 @@ h1{ color:#356d58; font-size:1.8rem; margin:1rem 0; }
 </head>
 <body>
 
-<h1>🍀 今日の3つのいいこと 🍀</h1>
+<h1>🍀今日の3つのいいこと🍀</h1>
 
 <div class="input-card">
-  <input type="date" id="entryDateInput"><br>
-  <input id="good1" placeholder="いいこと①"><br>
-  <input id="good2" placeholder="いいこと②"><br>
-  <input id="good3" placeholder="いいこと③"><br>
-  <textarea id="comment" placeholder="今日のひとことメモ"></textarea><br>
-  <button class="btn" onclick="saveGoodThings()">保存</button>
+  <label for="entryDateInput" style="display:block;font-size:0.9rem;margin-bottom:4px;">日付</label>
+  <input type="date" id="entryDateInput" aria-label="日付選択"><br>
+  <input id="good1" placeholder="いいこと①" aria-label="いいこと1"><br>
+  <input id="good2" placeholder="いいこと②" aria-label="いいこと2"><br>
+  <input id="good3" placeholder="いいこと③" aria-label="いいこと3"><br>
+  <textarea id="comment" placeholder="今日のひとことメモ" aria-label="ひとことメモ"></textarea><br>
+  <button class="btn" id="saveBtn">保存</button>
 </div>
 
-<div id="calendar">
+<div id="calendar" aria-label="カレンダー">
   <div class="calendar-header">
-    <button onclick="prevMonth()">←</button>
-    <h3 id="calendarTitle"></h3>
-    <button onclick="nextMonth()">→</button>
+    <button id="prevMonthBtn" aria-label="前の月">←</button>
+    <h3 id="calendarTitle" aria-live="polite"></h3>
+    <button id="nextMonthBtn" aria-label="次の月">→</button>
   </div>
-  <div class="calendar-grid" id="calendarGrid"></div>
+  <div class="calendar-grid" id="calendarGrid" role="grid"></div>
 </div>
 
-<button class="btn" onclick="showAllHistory()">📖 すべての履歴を見る</button>
+<button class="btn" id="showAllBtn">📖 すべての履歴を見る</button>
 
 <!-- モーダル -->
-<div id="historyModal" class="modal" onclick="closeModal(event)">
-  <div class="modal-content" onclick="event.stopPropagation()">
+<div id="historyModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalDateTitle" onclick="closeModal(event)">
+  <div class="modal-content" tabindex="-1">
     <div id="modalNav" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
       <button id="prevDayBtn" class="btn" style="width:45%;padding:0.5rem;">前日</button>
       <button id="nextDayBtn" class="btn" style="width:45%;padding:0.5rem;">翌日</button>
     </div>
     <h2 id="modalDateTitle">📅</h2>
     <div id="historyList"></div>
+    <div style="text-align:right;margin-top:8px;"><button id="closeModalBtn" class="btn" style="background:#999">閉じる</button></div>
   </div>
 </div>
 
@@ -187,11 +185,10 @@ h1{ color:#356d58; font-size:1.8rem; margin:1rem 0; }
 let selectedDate = new Date();
 let modalDate = new Date();
 let isShowingAllHistory = false;
-
-/* 保存しておく（ロック用） */
 let _lockedScrollY = 0;
 let _savedBodyPaddingRight = '';
-let _useIosScrollLock = /iP(ad|hone|od)/.test(navigator.platform) || navigator.userAgent.includes('Macintosh') && 'ontouchend' in document;
+let _useIosScrollLock = /iP(ad|hone|od)/.test(navigator.platform) || (navigator.userAgent.includes('Macintosh') && 'ontouchend' in document);
+let _lastFocusedElement = null;
 
 /* ---------- ヘルパー ---------- */
 function formatDate(d){
@@ -200,37 +197,36 @@ function formatDate(d){
   const day = ('0'+d.getDate()).slice(-2);
   return `${y}-${m}-${day}`;
 }
-
-/* ---------- スクロールバー幅取得 ---------- */
-function getScrollbarWidth(){
-  return window.innerWidth - document.documentElement.clientWidth;
+function escapeHTML(str){
+  if(str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
 }
+function getScrollbarWidth(){ return window.innerWidth - document.documentElement.clientWidth; }
 
-/* ---------- BODY スクロールロック（iOS フォールバック含む） ---------- */
+/* ---------- スクロールロック ---------- */
 function lockBodyScroll(){
   _lockedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
-
-  // スクロールバー幅補正（デスクトップ）
   const sbWidth = getScrollbarWidth();
   if(sbWidth > 0){
     _savedBodyPaddingRight = document.body.style.paddingRight || '';
     const current = parseFloat(getComputedStyle(document.body).paddingRight) || 0;
     document.body.style.paddingRight = (current + sbWidth) + 'px';
   }
-
   if(_useIosScrollLock){
-    // iOS では position:fixed が挙動怪しいので overflow:hidden を使う（body の幅ずれは上の補正で吸収）
     document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
   } else {
-    // デスクトップでは position:fixed で位置を固定
     document.body.style.position = 'fixed';
     document.body.style.top = `-${_lockedScrollY}px`;
     document.body.style.left = '0';
     document.body.style.right = '0';
   }
 }
-
 function unlockBodyScroll(){
   if(_useIosScrollLock){
     document.documentElement.style.overflow = '';
@@ -242,8 +238,6 @@ function unlockBodyScroll(){
     document.body.style.right = '';
     window.scrollTo(0, _lockedScrollY);
   }
-
-  // padding-right を元に戻す
   if(_savedBodyPaddingRight !== ''){
     document.body.style.paddingRight = _savedBodyPaddingRight;
   } else {
@@ -255,15 +249,29 @@ function unlockBodyScroll(){
 /* ---------- 保存 ---------- */
 function saveGoodThings(){
   const key = document.getElementById('entryDateInput').value || formatDate(new Date());
+  const good1 = document.getElementById('good1').value.trim();
+  const good2 = document.getElementById('good2').value.trim();
+  const good3 = document.getElementById('good3').value.trim();
+  const comment = document.getElementById('comment').value.trim();
+
+  // 少なくとも1つ入力がない場合は保存しない
+  if(!good1 && !good2 && !good3 && !comment){
+    alert('少なくとも1つ入力してください。');
+    return;
+  }
+
   const data = {
-    goodThings:[
-      document.getElementById('good1').value,
-      document.getElementById('good2').value,
-      document.getElementById('good3').value
-    ],
-    comment: document.getElementById('comment').value
+    goodThings:[good1, good2, good3],
+    comment: comment
   };
-  localStorage.setItem(key, JSON.stringify(data));
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (err){
+    console.error('localStorage set failed', err);
+    alert('保存に失敗しました（ストレージがいっぱいか、プライベートモードの可能性があります）。');
+    return;
+  }
+
   renderCalendar();
   document.getElementById('good1').value='';
   document.getElementById('good2').value='';
@@ -292,7 +300,13 @@ function renderCalendar(){
     grid.appendChild(c);
   });
 
-  for(let i=0;i<firstDay.getDay();i++) grid.appendChild(document.createElement('div'));
+  // 空セル（前月のはみ出し分）
+  for(let i=0;i<firstDay.getDay();i++){
+    const empty = document.createElement('div');
+    empty.className = 'calendar-cell empty';
+    empty.setAttribute('aria-hidden','true');
+    grid.appendChild(empty);
+  }
   for(let d=1; d<=lastDay.getDate(); d++){
     const date = new Date(year, month, d);
     const key = formatDate(date);
@@ -300,12 +314,14 @@ function renderCalendar(){
     cell.className = 'calendar-cell';
     if(localStorage.getItem(key)) cell.classList.add('has-entry');
     cell.textContent = d;
-    cell.onclick = ()=> showHistoryModal(date);
+    cell.setAttribute('role','button');
+    cell.tabIndex = 0;
+    cell.setAttribute('aria-label', `${year}年 ${month+1}月 ${d}日 の履歴を開く`);
+    cell.addEventListener('click', ()=> showHistoryModal(date));
+    cell.addEventListener('keydown', (e)=> { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showHistoryModal(date); }});
     grid.appendChild(cell);
   }
 }
-function prevMonth(){ selectedDate.setMonth(selectedDate.getMonth()-1); renderCalendar(); }
-function nextMonth(){ selectedDate.setMonth(selectedDate.getMonth()+1); renderCalendar(); }
 
 /* ---------- モーダル表示 ---------- */
 function showHistoryModal(date){
@@ -320,22 +336,12 @@ function showHistoryModal(date){
   list.innerHTML = '';
   document.getElementById('modalNav').style.display = 'flex';
 
-  // 安全に JSON.parse する（非JSON 値が混じっていても例外で停止しない）
   const raw = localStorage.getItem(key);
   if(raw){
     try {
       const data = JSON.parse(raw);
       if(data && data.goodThings){
-        const card = document.createElement('div');
-        card.className = 'history-card';
-        card.innerHTML = `<h3>${key}</h3>
-          <ul>
-            <li>① ${data.goodThings[0]||''}</li>
-            <li>② ${data.goodThings[1]||''}</li>
-            <li>③ ${data.goodThings[2]||''}</li>
-          </ul>
-          ${data.comment?`<div class="comment-box">${data.comment}</div>`:''}
-          <button onclick="deleteEntry('${key}')">削除</button>`;
+        const card = buildHistoryCard(key, data);
         list.appendChild(card);
       } else {
         list.innerHTML = '<p>まだ履歴がありません</p>';
@@ -348,13 +354,18 @@ function showHistoryModal(date){
     list.innerHTML = '<p>まだ履歴がありません</p>';
   }
 
+  // フォーカス管理
+  _lastFocusedElement = document.activeElement;
   lockBodyScroll();
   modal.classList.add('show');
   requestAnimationFrame(()=>{
     void modal.offsetWidth;
     modal.classList.add('show-animate');
     const content = modal.querySelector('.modal-content');
-    if(content) content.scrollTop = 0;
+    if(content){
+      content.focus();
+      content.scrollTop = 0;
+    }
   });
 }
 
@@ -365,14 +376,23 @@ function closeModal(e){
   setTimeout(()=>{
     modal.classList.remove('show');
     unlockBodyScroll();
+    if(_lastFocusedElement) _lastFocusedElement.focus();
   }, 360);
 }
+
 function prevDay(){ modalDate.setDate(modalDate.getDate()-1); showHistoryModal(modalDate); }
 function nextDay(){ modalDate.setDate(modalDate.getDate()+1); showHistoryModal(modalDate); }
 document.getElementById('prevDayBtn').onclick = prevDay;
 document.getElementById('nextDayBtn').onclick = nextDay;
 
-/* ---------- 全履歴（iOS で落ちないようにフィルタ＆ try/catch） ---------- */
+/* モーダル内の閉じるボタン */
+document.getElementById('closeModalBtn').addEventListener('click', ()=>{
+  const modal = document.getElementById('historyModal');
+  modal.classList.remove('show-animate');
+  setTimeout(()=>{ modal.classList.remove('show'); unlockBodyScroll(); if(_lastFocusedElement) _lastFocusedElement.focus(); }, 360);
+});
+
+/* ---------- 全履歴 ---------- */
 function showAllHistory(){
   isShowingAllHistory = true;
   const modal = document.getElementById('historyModal');
@@ -382,7 +402,6 @@ function showAllHistory(){
   title.textContent = '📖 すべての履歴';
   document.getElementById('modalNav').style.display = 'none';
 
-  // 日付キーのみ（YYYY-MM-DD）にフィルタして列挙 — これで SW などで入れた別キーを無視
   const keys = Object.keys(localStorage).filter(k=>/^\d{4}-\d{2}-\d{2}$/.test(k)).sort().reverse();
 
   if(keys.length === 0){
@@ -394,16 +413,7 @@ function showAllHistory(){
       try {
         const d = JSON.parse(raw);
         if(!d || !d.goodThings) return;
-        const card = document.createElement('div');
-        card.className = 'history-card';
-        card.innerHTML = `<h3>${k}</h3>
-          <ul>
-            <li>① ${d.goodThings[0]||''}</li>
-            <li>② ${d.goodThings[1]||''}</li>
-            <li>③ ${d.goodThings[2]||''}</li>
-          </ul>
-          ${d.comment?`<div class="comment-box">${d.comment}</div>`:''}
-          <button onclick="deleteEntry('${k}')">削除</button>`;
+        const card = buildHistoryCard(k, d);
         list.appendChild(card);
       } catch(err){
         console.warn('showAllHistory: skip invalid JSON for key', k, err);
@@ -411,11 +421,12 @@ function showAllHistory(){
     });
   }
 
+  _lastFocusedElement = document.activeElement;
   lockBodyScroll();
   modal.classList.add('show');
   requestAnimationFrame(()=>{ void modal.offsetWidth; modal.classList.add('show-animate'); });
   const content = modal.querySelector('.modal-content');
-  if(content) content.scrollTop = 0;
+  if(content) content.focus();
 }
 
 /* ---------- 削除 ---------- */
@@ -425,6 +436,36 @@ function deleteEntry(key){
   renderCalendar();
   if(isShowingAllHistory) showAllHistory();
   else showHistoryModal(modalDate);
+}
+
+/* ---------- 履歴カード作成（安全） ---------- */
+function buildHistoryCard(key, data){
+  const card = document.createElement('div');
+  card.className = 'history-card';
+
+  const h3 = document.createElement('h3');
+  h3.textContent = key;
+  card.appendChild(h3);
+
+  const ul = document.createElement('ul');
+  const li1 = document.createElement('li'); li1.textContent = `① ${data.goodThings[0]||''}`; ul.appendChild(li1);
+  const li2 = document.createElement('li'); li2.textContent = `② ${data.goodThings[1]||''}`; ul.appendChild(li2);
+  const li3 = document.createElement('li'); li3.textContent = `③ ${data.goodThings[2]||''}`; ul.appendChild(li3);
+  card.appendChild(ul);
+
+  if(data.comment){
+    const cm = document.createElement('div');
+    cm.className = 'comment-box';
+    cm.textContent = data.comment;
+    card.appendChild(cm);
+  }
+
+  const del = document.createElement('button');
+  del.textContent = '削除';
+  del.onclick = ()=> deleteEntry(key);
+  card.appendChild(del);
+
+  return card;
 }
 
 /* ---------- 桜 ---------- */
@@ -456,14 +497,26 @@ window.onload = ()=>{
   document.getElementById('entryDateInput').value = formatDate(new Date());
   renderCalendar();
 
+  document.getElementById('saveBtn').addEventListener('click', saveGoodThings);
+  document.getElementById('prevMonthBtn').addEventListener('click', ()=>{ selectedDate.setMonth(selectedDate.getMonth()-1); renderCalendar(); });
+  document.getElementById('nextMonthBtn').addEventListener('click', ()=>{ selectedDate.setMonth(selectedDate.getMonth()+1); renderCalendar(); });
+  document.getElementById('showAllBtn').addEventListener('click', showAllHistory);
+
   // Esc でモーダル閉じる
   window.addEventListener('keydown', (e)=>{
     if(e.key === 'Escape'){
       const modal = document.getElementById('historyModal');
       if(modal.classList.contains('show')){
         modal.classList.remove('show-animate');
-        setTimeout(()=>{ modal.classList.remove('show'); unlockBodyScroll(); }, 360);
+        setTimeout(()=>{ modal.classList.remove('show'); unlockBodyScroll(); if(_lastFocusedElement) _lastFocusedElement.focus(); }, 360);
       }
+    }
+  });
+
+  // フォーカススタイル向上のため、クリックでフォーカスも付与
+  document.addEventListener('click', (e)=>{
+    if(e.target.classList && e.target.classList.contains('calendar-cell')){
+      e.target.focus();
     }
   });
 };
